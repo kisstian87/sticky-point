@@ -191,14 +191,8 @@ All options live in the `sticky-point` customization group. Use
 ### Scroll detection
 
 ```elisp
-(setq sticky-point-scroll-commands
-			'(mwheel-scroll
-				scroll-up-command
-				scroll-down-command
-				scroll-other-window
-				pixel-scroll-precision
-				;; Add your own
-				))
+(add-to-list 'sticky-point-scroll-commands 'my-scroll-up)
+(add-to-list 'sticky-point-scroll-commands 'my-scroll-down)
 ```
 
 Commands listed here are treated as "the user is scrolling, don't move
