@@ -1,5 +1,4 @@
 # sticky-point
-# sticky-point
 
 [![MELPA](https://melpa.org/packages/sticky-point-badge.svg)](https://melpa.org/#/sticky-point)
 
