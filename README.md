@@ -83,6 +83,7 @@ GitHub repository:
   :quelpa (sticky-point
            :fetcher github
            :repo "kisstian87/sticky-point")
+  :ensure nil
   :config
   (global-sticky-point-mode 1))
 ```
@@ -101,6 +102,7 @@ with a recipe:
              :type git
              :host github
              :repo "kisstian87/sticky-point")
+  :ensure nil
   :config
   (global-sticky-point-mode 1))
 ```
