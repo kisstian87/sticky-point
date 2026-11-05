@@ -427,7 +427,7 @@ highlighting options:
 (defun sticky-point-mode--turn-on ()
 	"Turn on `sticky-point-mode' unconditionally.
 Used as the TURN-ON function of `global-sticky-point-mode'."
-	(sticky-point-mode 1));(add-hook 'after-change-major-mode-hook 'global-sticky-point-mode)
+	(sticky-point-mode 1))
 ;;;###autoload
 (define-globalized-minor-mode global-sticky-point-mode
 	sticky-point-mode
