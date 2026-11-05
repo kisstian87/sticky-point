@@ -1,7 +1,5 @@
 # sticky-point
 
-[![MELPA](https://melpa.org/packages/sticky-point-badge.svg)](https://melpa.org/#/sticky-point)
-
 > Preserve the logical position of the cursor while scrolling in Emacs.
 
 `sticky-point` keeps the cursor anchored to its logical position when you
