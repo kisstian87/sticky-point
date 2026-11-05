@@ -86,9 +86,11 @@ GitHub repository:
 	:ensure nil
 	:config
 	(global-sticky-point-mode t)
-	(sticky-point-highlight-symbol-mode nil) ;; activate if you want highlight symbol
-	(sticky-point-highlight-paren-mode nil) ;; activate if you want show parentheses
-	(sticky-point-indent-guide-mode nil)) ;; activate if you want highlight indent guide
+	;; Uncomment the sub-modes you want, globally:
+	;; (sticky-point-highlight-symbol-mode t)
+	;; (sticky-point-highlight-paren-mode t)
+	;; (sticky-point-indent-guide-mode t)
+	)
 ```
 
 The `(fetcher github :repo "user/repo")` form is the standard MELPA-style
@@ -108,9 +110,11 @@ with a recipe:
 	:ensure nil
 	:config
 	(global-sticky-point-mode t)
-	(sticky-point-highlight-symbol-mode nil) ;; activate if you want highlight symbol
-	(sticky-point-highlight-paren-mode nil) ;; activate if you want show parentheses
-	(sticky-point-indent-guide-mode nil)) ;; activate if you want highlight indent guide
+	;; Uncomment the sub-modes you want, globally:
+	;; (sticky-point-highlight-symbol-mode t)
+	;; (sticky-point-highlight-paren-mode t)
+	;; (sticky-point-indent-guide-mode t)
+	)
 ```
 
 The `:type git` field is optional if `straight-default-vc` is already `git`.
@@ -144,7 +148,7 @@ major mode satisfies `(derived-mode-p 'prog-mode 'text-mode 'conf-mode)`.
 (global-sticky-point-mode t)
 (sticky-point-highlight-symbol-mode t)
 (sticky-point-highlight-paren-mode t)
-(sticky-point-indent-guide-mode t)))
+(sticky-point-indent-guide-mode t)
 ```
 
 ### Selectively, only in programming modes
@@ -172,9 +176,11 @@ the rest.
 	:hook
 	:config
 	(global-sticky-point-mode t)
-	(sticky-point-highlight-symbol-mode nil) ;; activate if you want highlight symbol
-	(sticky-point-highlight-paren-mode nil) ;; activate if you want show parentheses
-	(sticky-point-indent-guide-mode nil)) ;; activate if you want highlight indent guide
+	;; Uncomment the sub-modes you want, globally:
+	;; (sticky-point-highlight-symbol-mode t)
+	;; (sticky-point-highlight-paren-mode t)
+	;; (sticky-point-indent-guide-mode t)
+	)
 ```-->
 
 ## Configuration
@@ -192,8 +198,7 @@ All options live in the `sticky-point` customization group. Use
 				scroll-other-window
 				pixel-scroll-precision
 				;; Add your own
-				my-scroll-up
-				my-scroll-down))
+				))
 ```
 
 Commands listed here are treated as "the user is scrolling, don't move
