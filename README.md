@@ -47,7 +47,7 @@ try.
 | Indent guides | Off | Draws vertical guides at the current indentation level |
 
 ## Installation
-
+<!--
 ### From MELPA (once published)
 
 ```elisp
@@ -59,13 +59,13 @@ try.
 ;; Then:
 ;; M-x package-install RET sticky-point RET
 ```
-
+-->
 ### From source
 
 Clone the repository somewhere on your `load-path`:
 
 ```bash
-git clone https://github.com/KISStian/sticky-point ~/.emacs.d/lisp/sticky-point
+git clone https://github.com/kisstian87/sticky-point ~/.emacs.d/lisp/sticky-point
 ```
 
 Then add it to your config:
@@ -84,7 +84,7 @@ GitHub repository:
 (use-package sticky-point
   :quelpa (sticky-point
            :fetcher github
-           :repo "KISStian/sticky-point")
+           :repo "kisstian87/sticky-point")
   :config
   (global-sticky-point-mode 1))
 ```
@@ -102,7 +102,7 @@ with a recipe:
   :straight (sticky-point
              :type git
              :host github
-             :repo "KISStian/sticky-point")
+             :repo "kisstian87/sticky-point")
   :config
   (global-sticky-point-mode 1))
 ```
