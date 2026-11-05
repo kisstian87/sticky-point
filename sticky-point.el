@@ -125,7 +125,7 @@ disappears from the visible window."
 (defface sticky-point-highlight-tag '((t (:background "#444400"))) "Highlight html tag." :group 'sticky-point-faces)
 (defface sticky-point-highlight-tag-error '((t (:background "#550000"))) "Highlight html tag error." :group 'sticky-point-faces)
 
-;;; Variables necesarias
+;;; Variables
 (defvar-local sticky-point--cursor-type-original cursor-type "Original cursor type.")
 (defvar-local sticky-point--selection-mark nil "Selection mark.")
 (defvar-local sticky-point--current-position nil "Variable to save the cursor's position.")
