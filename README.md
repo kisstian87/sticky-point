@@ -81,8 +81,8 @@ GitHub repository:
 ```elisp
 (use-package sticky-point
 	:quelpa (sticky-point
-					 :fetcher github
-					 :repo "kisstian87/sticky-point")
+		:fetcher github
+		:repo "kisstian87/sticky-point")
 	:ensure nil
 	:config
 	(global-sticky-point-mode t)
@@ -104,9 +104,9 @@ with a recipe:
 ```elisp
 (use-package sticky-point
 	:straight (sticky-point
-						 :type git
-						 :host github
-						 :repo "kisstian87/sticky-point")
+		:type git
+		:host github
+		:repo "kisstian87/sticky-point")
 	:ensure nil
 	:config
 	(global-sticky-point-mode t)
