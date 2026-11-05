@@ -1,0 +1,453 @@
+;;; sticky-point.el --- Preserve point position while scrolling -*- lexical-binding: t; -*-
+;; Author: KISStian <kisstian87@gmail.com>
+;; Version: 0.9.0
+;; Package-Requires: ((emacs "28.1"))
+;; Keywords: convenience, faces
+;; URL: https://github.com/kisstian87/sticky-point
+
+;;; Commentary:
+;`sticky-point.el' is a minor mode for Emacs that provides
+;;additional features similar to modern editors.	It includes
+;;features such as preserving the cursor position when scrolling,
+;;highlighting symbols and corresponding parentheses, and
+;;indentation guides.	 It also offers options for customizing the
+;;behavior:
+;; - Preserves the logical position of the cursor when scrolling
+;; - Highlights the symbol under the cursor (limited to the visible window)
+;; - Highlights corresponding parentheses
+;; - Highlights corresponding HTML tags
+;; - Indentation guides
+
+;; This file is not part of GNU Emacs.
+;; This program is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+;;; Code:
+(defgroup sticky-point nil
+	"Preservation of cursor position and current buffer highlights."
+	:group 'convenience
+	:prefix "sticky-point-")
+(defgroup sticky-point-faces nil
+	"Sticky-cursor faces."
+	:group 'sticky-point)
+
+;;; Customs
+;;;###autoload
+(defcustom global-sticky-point-mode nil
+	"Preserves the cursor position when scrolling and optionally highlights.
+Maintains the logical cursor position even if it disappears from the visible
+window while scrolling, as in modern editors.	 It also offers three optional
+highlighting options:
+	`sticky-point-highlight-symbol-mode'
+	`sticky-point-highlight-paren-mode'
+	`sticky-point-indent-guide-mode'.
+This is the global version."
+	:type 'boolean
+	:group 'sticky-point
+	:require 'sticky-point)
+;;;###autoload
+(defcustom sticky-point-mode nil
+	"Preserves the cursor position when scrolling and optionally highlights.
+Maintains the logical cursor position even if it disappears from the visible
+window while scrolling, as in modern editors.	 It also offers three optional
+highlighting options:
+	`sticky-point-highlight-symbol-mode'
+	`sticky-point-highlight-paren-mode'
+	`sticky-point-indent-guide-mode'."
+	:type 'boolean
+	:group 'sticky-point
+	:require 'sticky-point)
+;;;###autoload
+(defcustom sticky-point-highlight-symbol-mode nil
+	"Highlight all occurrences of the symbol under the cursor.
+The highlighting is limited to the visible region of the window."
+	:type 'boolean
+	:group 'sticky-point
+	:require 'sticky-point)
+;;;###autoload
+(defcustom sticky-point-highlight-paren-mode nil
+	"Highlight the parentheses that surround the cursor.
+The highlighting is limited to the visible region of the window."
+	:type 'boolean
+	:group 'sticky-point
+	:require 'sticky-point)
+;;;###autoload
+(defcustom sticky-point-indent-guide-mode nil
+	"Draw vertical indentation guides within the block.
+The highlighting is limited to the visible region of the window."
+	:type 'boolean
+	:group 'sticky-point
+	:require 'sticky-point)
+;;;###autoload
+(defcustom sticky-point-scroll-commands
+	'(mwheel-scroll scroll-up scroll-down scroll-left scroll-right scroll-up-command scroll-down-command scroll-other-window scroll-other-window-down scroll-bar-scroll-up scroll-bar-scroll-down scroll-bar-drag scroll-bar-movement scroll-bar-toolkit-scroll scroll-bar-toolkit-horizontal-scroll ignore-preserving-kill-region treemacs-leftclick-action company-abort corfu-quit save-buffer pixel-scroll-precision handle-select-window handle-switch-frame lsp-ui-doc--handle-mouse-movement pixel-scroll-start-momentum pixel-scroll-interpolate-down pixel-scroll-interpolate-up scroll-up-line scroll-down-line pixel-scroll-precision-scroll-down pixel-scroll-precision-scroll-up-page evil-scroll-line-to-center evil-scroll-line-to-top evil-scroll-line-to-bottom evil-scroll-page-up evil-scroll-page-down evil-scroll-up evil-scroll-down evil-scroll-line-up evil-scroll-line-down)
+	"Commands treated as scrolling operations.
+When `this-command' is in this list, the logical cursor is
+not updated and the saved position is preserved even if it
+disappears from the visible window."
+	:type '(repeat symbol)
+	:group 'sticky-point
+	:require 'sticky-point)
+;;;###autoload
+(defcustom sticky-point-delay-symbol 0.1
+	"Seconds of inactivity before highlighting the symbol."
+	:type 'number
+	:group 'sticky-point
+	:require 'sticky-point)
+;;;###autoload
+(defcustom sticky-point-delay-indent 0.1
+	"Seconds of inactivity before drawing the indentation guides."
+	:type 'number
+	:group 'sticky-point
+	:require 'sticky-point)
+;;;###autoload
+(defcustom sticky-point-delay-parentheses 0.1
+	"Seconds of inactivity before highlighting the parentheses."
+	:type 'number
+	:group 'sticky-point
+	:require 'sticky-point)
+;;;###autoload
+(defcustom sticky-point-case-sensitive nil
+	"If it is non-nil, match symbols case-insensitively."
+	:type 'boolean
+	:group 'sticky-point
+	:require 'sticky-point)
+;;;###autoload
+(defcustom sticky-point-indent-guide-character "│"
+	"Character used to draw the indentation guides."
+	:type 'string
+	:group 'sticky-point
+	:require 'sticky-point)
+
+;;; Faces
+(defface sticky-point-nested-level '((t (:foreground "#6ae4b9"))) "Nested level." :group 'sticky-point-faces)
+(defface sticky-point-highlight-paren2 '((t (:background "#277f2f" :foreground "#ffffff"))) "Highlight parentheses." :group 'sticky-point-faces)
+(defface sticky-point-highlight-paren1 '((t (:background "#2f7f9f" :foreground "#ffffff"))) "Highlight parentheses." :group 'sticky-point-faces)
+(defface sticky-point-highlight-paren-error '((t (:background "#550000" :foreground "#ffffff"))) "Parentheses error." :group 'sticky-point-faces)
+(defface sticky-point-highlight-symbol '((t (:background "#2f447f" :foreground "#ffffff"))) "Highlight symbol." :group 'sticky-point-faces)
+(defface sticky-point-highlight-tag '((t (:background "#444400"))) "Highlight html tag." :group 'sticky-point-faces)
+(defface sticky-point-highlight-tag-error '((t (:background "#550000"))) "Highlight html tag error." :group 'sticky-point-faces)
+
+;;; Variables necesarias
+(defvar-local sticky-point--cursor-type-original cursor-type "Original cursor type.")
+(defvar-local sticky-point--selection-mark nil "Selection mark.")
+(defvar-local sticky-point--current-position nil "Variable to save the cursor's position.")
+(defvar-local sticky-point--highlight-symbol-timer nil "Highlight symbol timer.")
+(defvar-local sticky-point--search-parentheses-timer nil "Search parentheses timer.")
+(defvar-local sticky-point--indent-overlay-timer nil "Indent overlay timer.")
+(defvar sticky-point--show-paren-mode-original nil "Original show paren mode.")
+
+;;; Highlight symbol
+(defun sticky-point--highlight-symbol-timer-func (position)
+	"Timer to highlight symbol at its POSITION."
+	(when sticky-point--highlight-symbol-timer (cancel-timer sticky-point--highlight-symbol-timer))
+	(setq sticky-point--highlight-symbol-timer (run-with-idle-timer sticky-point-delay-symbol nil (lambda () (while-no-input (when (window-live-p (selected-window)) (with-current-buffer (window-buffer) (sticky-point--highlight-symbol position))))))))
+(defun sticky-point--highlight-symbol (position)
+	"Highlighting function for the symbol at its POSITION."
+	(interactive "d")
+	(let* ((start (max (window-start) (point-min)))
+					(end (min (window-end) (point-max)))
+					(case-fold-search sticky-point-case-sensitive)
+					(symbol (unless (region-active-p) (save-excursion (goto-char position) (thing-at-point 'symbol)))))
+		(when (< start end)
+			(save-excursion
+				(remove-overlays start end 'face 'sticky-point-highlight-symbol)
+				(remove-overlays start end 'face 'hl-line)
+				(goto-char position)
+				(unless (region-active-p) (overlay-put (make-overlay (line-beginning-position) (save-excursion (goto-char (line-end-position)) (forward-line 1) (point))) 'face 'hl-line))
+				(when (and symbol (not (string= symbol "")))
+					(goto-char start)
+					(while (re-search-forward (concat "\\_<" (regexp-quote symbol) "\\_>") end t)
+						(overlay-put (make-overlay (match-beginning 0) (match-end 0)) 'face 'sticky-point-highlight-symbol)))))))
+
+;;; Indent overlay
+(declare-function python-nav-up-list "Python up-list.")
+(declare-function python-nav-backward-up-list "Python backward-up-list.")
+(defun sticky-point--indent-overlay-timer-func (position)
+	"Timer for highlighting nesting level at the POSITION."
+	(when sticky-point--indent-overlay-timer (cancel-timer sticky-point--indent-overlay-timer))
+	(setq sticky-point--indent-overlay-timer (run-with-idle-timer sticky-point-delay-indent nil (lambda () (while-no-input (when (window-live-p (selected-window)) (with-current-buffer (window-buffer) (sticky-point--indent-overlay position))))))))
+(defun sticky-point--indent-overlay (position)
+	"Highlights the nesting level at POSITION, limited to the visible."
+	(interactive "d")
+	(with-current-buffer (window-buffer)
+		(let* ((start (max (window-start) (point-min)))
+					 (end		(min (window-end) (point-max))))
+			(when (< start end)
+				(remove-overlays start end 'face 'sticky-point-highlight-paren2)
+				(remove-overlays start end 'face 'sticky-point-nested-level)
+				(save-excursion
+					(goto-char position)
+					(when (ignore-errors (if (memq major-mode '(python-mode python-ts-mode)) (python-nav-backward-up-list 1) (backward-up-list 1)) t)
+						(let* ((inicio (+ 1 (point)))
+									 (indent (current-indentation))
+									 (final	 (save-excursion (goto-char inicio) (when (ignore-errors (if (memq major-mode '(python-mode python-ts-mode)) (python-nav-up-list 1) (up-list 1)) t) (point)))))
+							(when (and inicio final (< inicio final))
+								(dolist (p (list (1- inicio) (1- final)))
+									(when (and (>= p start) (< p end) (not (eq (char-syntax (char-after p)) ?w)))
+										(let ((ov (make-overlay p (1+ p))))
+											(overlay-put ov 'face 'sticky-point-highlight-paren2))))
+								(goto-char (max inicio start))
+								(while (< (point) (min final end))
+									(let ((line-start (point)))
+										(when (>= line-start start)
+											(let ((pos (save-excursion (move-to-column indent) (when (eq (current-column) indent) (point)))))
+												(when (and pos
+																	 (<	 pos (line-end-position))
+																	 (>= pos (max inicio start))
+																	 (<	 pos (min final end))
+																	 (memq (char-after pos) '(?\s ?\t)))
+													(let* ( (inicio-col (save-excursion (goto-char pos) (current-column)))
+																	(fin-col (save-excursion (goto-char pos) (forward-char 1) (current-column)))
+																	(columnas (- fin-col inicio-col))
+																	(display (concat sticky-point-indent-guide-character (make-string (1- columnas) ?\s)))
+																	(ov (make-overlay pos (1+ pos))))
+														(overlay-put ov 'display display)
+														(overlay-put ov 'face 'sticky-point-nested-level))))))
+									(forward-line 1))))))))))
+
+;;; Search parentheses
+(defun sticky-point--search-parentheses-timer-func (position)
+	"Timer para resaltar parentheses en la POSITION."
+	(when sticky-point--search-parentheses-timer (cancel-timer sticky-point--search-parentheses-timer))
+	(setq sticky-point--search-parentheses-timer (run-with-idle-timer sticky-point-delay-parentheses nil (lambda () (while-no-input (when (window-live-p (selected-window)) (with-current-buffer (window-buffer) (sticky-point--search-parentheses position))))))))
+(defun sticky-point--search-parentheses (position)
+	"Function to find pairs at POSITION."
+	(interactive "d")
+	(with-current-buffer (window-buffer)
+		(let* ((start (max (window-start) (point-min)))
+						(end (min (window-end)	 (point-max)))
+						(case-fold-search sticky-point-case-sensitive)
+						(symbol (if (region-active-p) (buffer-substring-no-properties (region-beginning) (region-end)) (save-excursion (goto-char position) (thing-at-point 'symbol)))))
+			(when (< start end)
+				(remove-overlays start end 'face 'sticky-point-highlight-paren-error)
+				(remove-overlays start end 'face 'sticky-point-highlight-paren1)
+				(remove-overlays start end 'face 'sticky-point-highlight-tag)
+				(remove-overlays start end 'face 'sticky-point-highlight-tag-error)
+				(save-excursion
+					(let ((par_encontrado nil)
+								 (position_aux position)
+								 (arreglo '(("(" ")") ("[" "]") ("{" "}")))
+								 (caracter1 (save-excursion (goto-char position) (thing-at-point 'char)))
+								 (caracter2 (save-excursion (goto-char (- position 1)) (thing-at-point 'char))))
+						(dotimes (i (length arreglo))
+							(unless par_encontrado
+								(let ( (parentheses1 (nth 0 (nth i arreglo)))
+											 (parentheses2 (nth 1 (nth i arreglo)))
+											 (comentario nil)
+											 (string nil)
+											 (contador 0))
+									(when (or (string= caracter1 parentheses1) (string= caracter2 parentheses1) (string= caracter1 parentheses2) (string= caracter2 parentheses2))
+										(when (or (string= symbol caracter1) (string= symbol caracter2)) (remove-overlays start end 'face 'sticky-point-highlight-symbol))
+										(when (or (string= caracter2 parentheses1) (string= caracter2 parentheses2)) (setq position_aux (- position_aux 1)))
+										(goto-char position_aux)
+										(setq string (nth 3 (syntax-ppss position_aux)))
+										(setq comentario (nth 4 (syntax-ppss position_aux)))
+										(overlay-put (make-overlay position_aux (1+ position_aux)) 'face 'sticky-point-highlight-paren1)
+										(when (or (string= caracter1 parentheses2) (string= caracter2 parentheses2))(goto-char (+ position_aux 1)))
+										(while (and (not (eq (abs contador) 50)) (if (or (string= caracter1 parentheses1) (string= caracter2 parentheses1)) (re-search-forward (if (string= parentheses1 "[") "[][]" (concat "[" parentheses1 parentheses2 "]")) (point-max) t) (re-search-backward (if (string= parentheses1 "[") "[][]" (concat "[" parentheses1 parentheses2 "]")) (point-min) t)))
+											(when (and
+															(eq string (nth 3 (syntax-ppss (point))))
+															(eq comentario (nth 4 (syntax-ppss (point)))))
+												(if (or (string= (match-string 0) caracter1) (string= (match-string 0) caracter2))
+													(setq contador (+ contador 1))
+													(progn
+														(setq contador (- contador 1))
+														(when (eq contador 0)
+															(setq par_encontrado t)
+															(setq contador -50)
+															(overlay-put (make-overlay (match-beginning 0) (match-end 0)) 'face 'sticky-point-highlight-paren1))))))
+											(unless par_encontrado (overlay-put (make-overlay position_aux (1+ position_aux)) 'face 'sticky-point-highlight-paren-error)))))))
+					(when
+						(memq major-mode '(web-mode php-ts-mode html-ts-mode html-mode sgml-mode xml-mode nxml-mode))
+						(let ((position_aux position)
+									(par_encontrado nil)
+									(contador 1)
+									(arreglo '("area" "base" "br" "col" "embed" "hr" "img" "input" "keygen" "link" "meta" "param" "source" "track" "wbr")))
+							(let* ((tag1 (save-excursion (goto-char position_aux) (search-backward "<" (point-min) t) (match-beginning 0)))
+										 (tag2 (save-excursion (goto-char tag1) (search-forward ">" (point-max) t) (match-beginning 0)))
+										 (tag (when (eq (line-number-at-pos tag1) (line-number-at-pos tag2)) (save-excursion (goto-char tag1) (re-search-forward "[a-zA-Z/]+" tag2 t) (if (eq (match-beginning 0) (+ 1 tag1)) (buffer-substring-no-properties (match-beginning 0) (match-end 0)) nil)))))
+								(when (and tag (> (length tag) 0) (<= tag1 position_aux) (>= tag2 position_aux))
+									(overlay-put (make-overlay tag1 (+ tag2 1)) 'face 'sticky-point-highlight-tag)
+									(unless (or (string= (buffer-substring-no-properties (- tag2 1) tag2) "/") (member (replace-regexp-in-string "/" "" tag) arreglo))
+										(if (not (string= (substring tag 0 1) "/"))
+											(progn	; APERTURA
+												(goto-char tag2)
+												(while (and (not par_encontrado) (re-search-forward (concat "<\\(/?\\)" (regexp-quote tag) "[^>]*>") (point-max) t))
+													(unless (nth 4 (syntax-ppss (point)))
+														(if (not(string= (substring (buffer-substring-no-properties (match-beginning 0) (match-end 0)) 0 2) "</"))
+															(setq contador (+ contador 1))
+															(progn
+																(setq contador (- contador 1))
+																(when (eq contador 0)
+																	(overlay-put (make-overlay (match-beginning 0) (match-end 0)) 'face 'sticky-point-highlight-tag)
+																	(setq par_encontrado t)))))))
+											(progn	; CIERRE
+												(goto-char tag1)
+												(while (and (not par_encontrado) (re-search-backward (concat "<\\(/?\\)" (regexp-quote (substring tag 1 (length tag))) "[^>]*>") (point-min) t))
+													(unless (nth 4 (syntax-ppss (point)))
+														(if (string= (substring (buffer-substring-no-properties (match-beginning 0) (match-end 0)) 0 2) "</")
+															(setq contador (+ contador 1))
+															(progn
+																(setq contador (- contador 1))
+																(when (eq contador 0)
+																	(overlay-put (make-overlay (match-beginning 0) (match-end 0)) 'face 'sticky-point-highlight-tag)
+																	(setq par_encontrado t))))))))
+										(unless par_encontrado (overlay-put (make-overlay tag1 (+ tag2 1)) 'face 'sticky-point-highlight-tag-error))))))))))))
+
+(defun sticky-point--save-position ()
+	"Stores the original position in a variable to be able to return later."
+	(with-current-buffer (window-buffer)
+		(unless sticky-point--current-position (setq sticky-point--current-position (point)))
+		(if
+			(memq this-command sticky-point-scroll-commands)
+			(if (pos-visible-in-window-p sticky-point--current-position)
+				(unless cursor-type
+					(goto-char sticky-point--current-position)
+					(setq cursor-type sticky-point--cursor-type-original)
+					(setq face-remapping-alist (assq-delete-all 'line-number-current-line face-remapping-alist)))
+				(when cursor-type
+					(setq cursor-type nil)
+					(push '(line-number-current-line line-number) face-remapping-alist)))
+			(progn (setq sticky-point--current-position (point))))
+		(when (or buffer-file-name (derived-mode-p 'prog-mode 'text-mode))
+			(when sticky-point-highlight-symbol-mode (sticky-point--highlight-symbol-timer-func sticky-point--current-position))
+			(when sticky-point-highlight-paren-mode (sticky-point--search-parentheses-timer-func sticky-point--current-position))
+			(when sticky-point-indent-guide-mode (sticky-point--indent-overlay-timer-func sticky-point--current-position)))))
+
+(defun sticky-point--load-position ()
+	"Loads the saved position to return when no longer visible."
+	(with-current-buffer (window-buffer)
+		(unless sticky-point--current-position (setq sticky-point--current-position (point)))
+		(unless (eq sticky-point--current-position (point))
+			(unless
+				(memq this-command sticky-point-scroll-commands)
+				(unless cursor-type
+					(goto-char sticky-point--current-position)
+					(let ((sticky-point-position-retorno (point)))
+						(when sticky-point--selection-mark
+							(when (and (use-region-p) (or (and (< sticky-point-position-retorno sticky-point--current-position) (< sticky-point--selection-mark sticky-point--current-position)) (and (> sticky-point-position-retorno sticky-point--current-position) (> sticky-point--selection-mark sticky-point--current-position))))
+								(setq sticky-point--selection-mark sticky-point--current-position))
+							(push-mark sticky-point--selection-mark nil t)
+							(goto-char sticky-point-position-retorno)))
+					(setq cursor-type sticky-point--cursor-type-original)
+					(setq face-remapping-alist(assq-delete-all 'line-number-current-line face-remapping-alist)))))))
+
+;;;###autoload
+(define-minor-mode sticky-point-highlight-symbol-mode
+	"Highlight all occurrences of the symbol under the cursor.
+The highlighting is limited to the visible region of the window."
+	:lighter " SP-Sym"
+	:group 'sticky-point
+	:require 'sticky-point
+	(if sticky-point-highlight-symbol-mode
+		(progn
+			(unless sticky-point-mode (sticky-point-mode 1))
+			(when buffer-file-name
+				(sticky-point--highlight-symbol-timer-func (point))))
+		(when sticky-point--highlight-symbol-timer
+			(cancel-timer sticky-point--highlight-symbol-timer)
+			(setq sticky-point--highlight-symbol-timer nil))
+		(remove-overlays nil nil 'face 'sticky-point-highlight-symbol)))
+
+;;;###autoload
+(define-minor-mode sticky-point-highlight-paren-mode
+	"Highlight the parentheses that surround the cursor.
+The highlighting is limited to the visible region of the window."
+	:lighter " SP-Par"
+	:group 'sticky-point
+	:require 'sticky-point
+	(if sticky-point-highlight-paren-mode
+		(progn
+      (unless sticky-point-mode (sticky-point-mode 1))
+      (when (and sticky-point-mode buffer-file-name)
+        (sticky-point--search-parentheses-timer-func (point))))
+		(when sticky-point--search-parentheses-timer
+			(cancel-timer sticky-point--search-parentheses-timer)
+			(setq sticky-point--search-parentheses-timer nil))
+		(remove-overlays nil nil 'face 'sticky-point-highlight-paren1)
+		(remove-overlays nil nil 'face 'sticky-point-highlight-paren2)
+		(remove-overlays nil nil 'face 'sticky-point-highlight-paren-error)
+		(remove-overlays nil nil 'face 'sticky-point-highlight-tag)
+		(remove-overlays nil nil 'face 'sticky-point-highlight-tag-error)))
+
+;;;###autoload
+(define-minor-mode sticky-point-indent-guide-mode
+	"Draw vertical indentation guides within the block.
+The highlighting is limited to the visible region of the window."
+	:lighter " SP-Ind"
+	:group 'sticky-point
+	:require 'sticky-point
+	(if sticky-point-indent-guide-mode
+		(progn
+			(unless sticky-point-mode (sticky-point-mode 1))
+			(when (and sticky-point-mode buffer-file-name)
+				(sticky-point--indent-overlay-timer-func (point))))
+		(progn
+			(when sticky-point--indent-overlay-timer
+				(cancel-timer sticky-point--indent-overlay-timer)
+				(setq sticky-point--indent-overlay-timer nil))
+			(remove-overlays nil nil 'face 'sticky-point-highlight-paren2)
+			(remove-overlays nil nil 'face 'sticky-point-nested-level))))
+
+;;;###autoload
+(define-minor-mode sticky-point-mode
+	"Preserves the cursor position when scrolling and optionally highlights.
+Maintains the logical cursor position even if it disappears from the visible
+window while scrolling, as in modern editors.	 It also offers three optional
+highlighting options:
+	`sticky-point-highlight-symbol-mode'
+	`sticky-point-highlight-paren-mode'
+	`sticky-point-indent-guide-mode'."
+	:lighter " SC"
+	:group 'sticky-point
+	(if sticky-point-mode
+		(progn
+			(unless sticky-point--show-paren-mode-original (setq sticky-point--show-paren-mode-original show-paren-mode))
+			(show-paren-mode -1)
+			(setq sticky-point--cursor-type-original cursor-type)
+			(add-hook 'post-command-hook #'sticky-point--save-position nil t)
+			(add-hook 'pre-command-hook #'sticky-point--load-position nil t))
+		(progn
+			(remove-overlays nil nil 'face 'sticky-point-highlight-symbol)
+			(remove-overlays nil nil 'face 'sticky-point-highlight-paren1)
+			(remove-overlays nil nil 'face 'sticky-point-highlight-paren2)
+			(remove-overlays nil nil 'face 'sticky-point-highlight-paren-error)
+			(remove-overlays nil nil 'face 'sticky-point-nested-level)
+			(remove-overlays nil nil 'face 'sticky-point-highlight-tag)
+			(remove-overlays nil nil 'face 'sticky-point-highlight-tag-error)
+			(setq sticky-point--current-position nil)
+			(show-paren-mode (if sticky-point--show-paren-mode-original 1 -1))
+			(remove-hook 'post-command-hook #'sticky-point--save-position t)
+			(remove-hook 'pre-command-hook #'sticky-point--load-position t)
+			(when sticky-point--highlight-symbol-timer
+				(cancel-timer sticky-point--highlight-symbol-timer)
+				(setq sticky-point--highlight-symbol-timer nil))
+			(when sticky-point--search-parentheses-timer
+				(cancel-timer sticky-point--search-parentheses-timer)
+				(setq sticky-point--search-parentheses-timer nil))
+			(when sticky-point--indent-overlay-timer
+				(cancel-timer sticky-point--indent-overlay-timer)
+				(setq sticky-point--indent-overlay-timer nil)))))
+
+(defun sticky-point-mode--turn-on ()
+	"Turn on `sticky-point-mode' unconditionally.
+Used as the TURN-ON function of `global-sticky-point-mode'."
+	(sticky-point-mode 1));(add-hook 'after-change-major-mode-hook 'global-sticky-point-mode)
+;;;###autoload
+(define-globalized-minor-mode global-sticky-point-mode
+	sticky-point-mode
+	sticky-point-mode--turn-on
+	:group 'sticky-point
+	:require 'sticky-point)
+
+(provide 'sticky-point)
+;;; sticky-point.el ends here
