@@ -261,7 +261,7 @@ Example:
 
 ## Compatibility
 
-- Emacs 27.1 or later
+- Emacs 28.1 or later
 - Works with `pixel-scroll-precision-mode`
 - Works with `show-paren-mode` (temporarily disables it while active, restores on exit)
 - Works with `evil-mode` (scroll commands from Evil are in the default list)
