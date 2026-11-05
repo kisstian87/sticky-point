@@ -25,10 +25,10 @@
 ;; (at your option) any later version.
 ;; This program is distributed in the hope that it will be useful,
 ;; but WITHOUT ANY WARRANTY; without even the implied warranty of
-;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
 ;; GNU General Public License for more details.
 ;; You should have received a copy of the GNU General Public License
-;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
+;; along with this program.	 If not, see <https://www.gnu.org/licenses/>.
 
 ;;; Code:
 (defgroup sticky-point nil
@@ -51,8 +51,7 @@ highlighting options:
 	`sticky-point-indent-guide-mode'.
 This is the global version."
 	:type 'boolean
-	:group 'sticky-point
-	:require 'sticky-point)
+	:group 'sticky-point)
 ;;;###autoload
 (defcustom sticky-point-mode nil
 	"Preserves the cursor position when scrolling and optionally highlights.
@@ -367,9 +366,9 @@ The highlighting is limited to the visible region of the window."
 	:require 'sticky-point
 	(if sticky-point-highlight-paren-mode
 		(progn
-      (unless sticky-point-mode (sticky-point-mode 1))
-      (when (and sticky-point-mode buffer-file-name)
-        (sticky-point--search-parentheses-timer-func (point))))
+			(unless sticky-point-mode (sticky-point-mode 1))
+			(when (and sticky-point-mode buffer-file-name)
+				(sticky-point--search-parentheses-timer-func (point))))
 		(when sticky-point--search-parentheses-timer
 			(cancel-timer sticky-point--search-parentheses-timer)
 			(setq sticky-point--search-parentheses-timer nil))
