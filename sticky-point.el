@@ -62,29 +62,25 @@ highlighting options:
 	`sticky-point-highlight-paren-mode'
 	`sticky-point-indent-guide-mode'."
 	:type 'boolean
-	:group 'sticky-point
-	:require 'sticky-point)
+	:group 'sticky-point)
 ;;;###autoload
 (defcustom sticky-point-highlight-symbol-mode nil
 	"Highlight all occurrences of the symbol under the cursor.
 The highlighting is limited to the visible region of the window."
 	:type 'boolean
-	:group 'sticky-point
-	:require 'sticky-point)
+	:group 'sticky-point)
 ;;;###autoload
 (defcustom sticky-point-highlight-paren-mode nil
 	"Highlight the parentheses that surround the cursor.
 The highlighting is limited to the visible region of the window."
 	:type 'boolean
-	:group 'sticky-point
-	:require 'sticky-point)
+	:group 'sticky-point)
 ;;;###autoload
 (defcustom sticky-point-indent-guide-mode nil
 	"Draw vertical indentation guides within the block.
 The highlighting is limited to the visible region of the window."
 	:type 'boolean
-	:group 'sticky-point
-	:require 'sticky-point)
+	:group 'sticky-point)
 ;;;###autoload
 (defcustom sticky-point-scroll-commands
 	'(mwheel-scroll scroll-up scroll-down scroll-left scroll-right scroll-up-command scroll-down-command scroll-other-window scroll-other-window-down scroll-bar-scroll-up scroll-bar-scroll-down scroll-bar-drag scroll-bar-movement scroll-bar-toolkit-scroll scroll-bar-toolkit-horizontal-scroll ignore-preserving-kill-region treemacs-leftclick-action company-abort corfu-quit save-buffer pixel-scroll-precision handle-select-window handle-switch-frame lsp-ui-doc--handle-mouse-movement pixel-scroll-start-momentum pixel-scroll-interpolate-down pixel-scroll-interpolate-up scroll-up-line scroll-down-line pixel-scroll-precision-scroll-down pixel-scroll-precision-scroll-up-page evil-scroll-line-to-center evil-scroll-line-to-top evil-scroll-line-to-bottom evil-scroll-page-up evil-scroll-page-down evil-scroll-up evil-scroll-down evil-scroll-line-up evil-scroll-line-down)
@@ -93,38 +89,32 @@ When `this-command' is in this list, the logical cursor is
 not updated and the saved position is preserved even if it
 disappears from the visible window."
 	:type '(repeat symbol)
-	:group 'sticky-point
-	:require 'sticky-point)
+	:group 'sticky-point)
 ;;;###autoload
 (defcustom sticky-point-delay-symbol 0.1
 	"Seconds of inactivity before highlighting the symbol."
 	:type 'number
-	:group 'sticky-point
-	:require 'sticky-point)
+	:group 'sticky-point)
 ;;;###autoload
 (defcustom sticky-point-delay-indent 0.1
 	"Seconds of inactivity before drawing the indentation guides."
 	:type 'number
-	:group 'sticky-point
-	:require 'sticky-point)
+	:group 'sticky-point)
 ;;;###autoload
 (defcustom sticky-point-delay-parentheses 0.1
 	"Seconds of inactivity before highlighting the parentheses."
 	:type 'number
-	:group 'sticky-point
-	:require 'sticky-point)
+	:group 'sticky-point)
 ;;;###autoload
 (defcustom sticky-point-case-sensitive nil
 	"If it is non-nil, match symbols case-insensitively."
 	:type 'boolean
-	:group 'sticky-point
-	:require 'sticky-point)
+	:group 'sticky-point)
 ;;;###autoload
 (defcustom sticky-point-indent-guide-character "│"
 	"Character used to draw the indentation guides."
 	:type 'string
-	:group 'sticky-point
-	:require 'sticky-point)
+	:group 'sticky-point)
 
 ;;; Faces
 (defface sticky-point-nested-level '((t (:foreground "#6ae4b9"))) "Nested level." :group 'sticky-point-faces)
@@ -346,7 +336,6 @@ disappears from the visible window."
 The highlighting is limited to the visible region of the window."
 	:lighter " SP-Sym"
 	:group 'sticky-point
-	:require 'sticky-point
 	(if sticky-point-highlight-symbol-mode
 		(progn
 			(unless sticky-point-mode (sticky-point-mode 1))
@@ -363,7 +352,6 @@ The highlighting is limited to the visible region of the window."
 The highlighting is limited to the visible region of the window."
 	:lighter " SP-Par"
 	:group 'sticky-point
-	:require 'sticky-point
 	(if sticky-point-highlight-paren-mode
 		(progn
 			(unless sticky-point-mode (sticky-point-mode 1))
@@ -384,7 +372,6 @@ The highlighting is limited to the visible region of the window."
 The highlighting is limited to the visible region of the window."
 	:lighter " SP-Ind"
 	:group 'sticky-point
-	:require 'sticky-point
 	(if sticky-point-indent-guide-mode
 		(progn
 			(unless sticky-point-mode (sticky-point-mode 1))
@@ -445,8 +432,7 @@ Used as the TURN-ON function of `global-sticky-point-mode'."
 (define-globalized-minor-mode global-sticky-point-mode
 	sticky-point-mode
 	sticky-point-mode--turn-on
-	:group 'sticky-point
-	:require 'sticky-point)
+	:group 'sticky-point)
 
 (provide 'sticky-point)
 ;;; sticky-point.el ends here
