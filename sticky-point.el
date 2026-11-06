@@ -47,7 +47,7 @@ Maintains the logical cursor position even if it disappears from the visible
 window while scrolling, as in modern editors.	 It also offers three optional
 highlighting options:
 	`sticky-point-highlight-symbol-mode'
-	`sticky-point-highlight-parens-mode'
+	`sticky-point-show-parens-mode'
 	`sticky-point-indent-guides-mode'.
 This is the global version."
 	:type 'boolean
@@ -59,7 +59,7 @@ Maintains the logical cursor position even if it disappears from the visible
 window while scrolling, as in modern editors.	 It also offers three optional
 highlighting options:
 	`sticky-point-highlight-symbol-mode'
-	`sticky-point-highlight-parens-mode'
+	`sticky-point-show-parens-mode'
 	`sticky-point-indent-guides-mode'."
 	:type 'boolean
 	:group 'sticky-point)
@@ -70,7 +70,7 @@ The highlighting is limited to the visible region of the window."
 	:type 'boolean
 	:group 'sticky-point)
 ;;;###autoload
-(defcustom sticky-point-highlight-parens-mode nil
+(defcustom sticky-point-show-parens-mode nil
 	"Highlight the parentheses that surround the cursor.
 The highlighting is limited to the visible region of the window."
 	:type 'boolean
@@ -309,7 +309,7 @@ disappears from the visible window."
 			(progn (setq sticky-point--current-position (point))))
 		(when (or buffer-file-name (derived-mode-p 'prog-mode 'text-mode))
 			(when sticky-point-highlight-symbol-mode (sticky-point--highlight-symbol-timer-func sticky-point--current-position))
-			(when sticky-point-highlight-parens-mode (sticky-point--search-parentheses-timer-func sticky-point--current-position))
+			(when sticky-point-show-parens-mode (sticky-point--search-parentheses-timer-func sticky-point--current-position))
 			(when sticky-point-indent-guides-mode (sticky-point--indent-overlay-timer-func sticky-point--current-position)))))
 
 (defun sticky-point--load-position ()
@@ -347,12 +347,12 @@ The highlighting is limited to the visible region of the window."
 		(remove-overlays nil nil 'face 'sticky-point-highlight-symbol)))
 
 ;;;###autoload
-(define-minor-mode sticky-point-highlight-parens-mode
+(define-minor-mode sticky-point-show-parens-mode
 	"Highlight the parentheses that surround the cursor.
 The highlighting is limited to the visible region of the window."
 	:lighter " SP-Par"
 	:group 'sticky-point
-	(if sticky-point-highlight-parens-mode
+	(if sticky-point-show-parens-mode
 		(progn
 			(unless sticky-point-mode (sticky-point-mode 1))
 			(when (and sticky-point-mode buffer-file-name)
@@ -391,7 +391,7 @@ Maintains the logical cursor position even if it disappears from the visible
 window while scrolling, as in modern editors.	 It also offers three optional
 highlighting options:
 	`sticky-point-highlight-symbol-mode'
-	`sticky-point-highlight-parens-mode'
+	`sticky-point-show-parens-mode'
 	`sticky-point-indent-guides-mode'."
 	:lighter " SC"
 	:group 'sticky-point
