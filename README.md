@@ -89,7 +89,7 @@ GitHub repository:
 	;; Uncomment the sub-modes you want, globally:
 	;; (sticky-point-highlight-symbol-mode t)
 	;; (sticky-point-highlight-paren-mode t)
-	;; (sticky-point-indent-guide-mode t)
+	;; (sticky-point-indent-guides-mode t)
 	)
 ```
 
@@ -113,7 +113,7 @@ with a recipe:
 	;; Uncomment the sub-modes you want, globally:
 	;; (sticky-point-highlight-symbol-mode t)
 	;; (sticky-point-highlight-paren-mode t)
-	;; (sticky-point-indent-guide-mode t)
+	;; (sticky-point-indent-guides-mode t)
 	)
 ```
 
@@ -148,7 +148,7 @@ major mode satisfies `(derived-mode-p 'prog-mode 'text-mode 'conf-mode)`.
 (global-sticky-point-mode t)
 (sticky-point-highlight-symbol-mode t)
 (sticky-point-highlight-paren-mode t)
-(sticky-point-indent-guide-mode t)
+(sticky-point-indent-guides-mode t)
 ```
 
 ### Selectively, only in programming modes
@@ -179,7 +179,7 @@ the rest.
 	;; Uncomment the sub-modes you want, globally:
 	;; (sticky-point-highlight-symbol-mode t)
 	;; (sticky-point-highlight-paren-mode t)
-	;; (sticky-point-indent-guide-mode t)
+	;; (sticky-point-indent-guides-mode t)
 	)
 ```-->
 
