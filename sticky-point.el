@@ -48,7 +48,7 @@ window while scrolling, as in modern editors.	 It also offers three optional
 highlighting options:
 	`sticky-point-highlight-symbol-mode'
 	`sticky-point-highlight-paren-mode'
-	`sticky-point-indent-guide-mode'.
+	`sticky-point-indent-guides-mode'.
 This is the global version."
 	:type 'boolean
 	:group 'sticky-point)
@@ -60,7 +60,7 @@ window while scrolling, as in modern editors.	 It also offers three optional
 highlighting options:
 	`sticky-point-highlight-symbol-mode'
 	`sticky-point-highlight-paren-mode'
-	`sticky-point-indent-guide-mode'."
+	`sticky-point-indent-guides-mode'."
 	:type 'boolean
 	:group 'sticky-point)
 ;;;###autoload
@@ -76,7 +76,7 @@ The highlighting is limited to the visible region of the window."
 	:type 'boolean
 	:group 'sticky-point)
 ;;;###autoload
-(defcustom sticky-point-indent-guide-mode nil
+(defcustom sticky-point-indent-guides-mode nil
 	"Draw vertical indentation guides within the block.
 The highlighting is limited to the visible region of the window."
 	:type 'boolean
@@ -310,7 +310,7 @@ disappears from the visible window."
 		(when (or buffer-file-name (derived-mode-p 'prog-mode 'text-mode))
 			(when sticky-point-highlight-symbol-mode (sticky-point--highlight-symbol-timer-func sticky-point--current-position))
 			(when sticky-point-highlight-paren-mode (sticky-point--search-parentheses-timer-func sticky-point--current-position))
-			(when sticky-point-indent-guide-mode (sticky-point--indent-overlay-timer-func sticky-point--current-position)))))
+			(when sticky-point-indent-guides-mode (sticky-point--indent-overlay-timer-func sticky-point--current-position)))))
 
 (defun sticky-point--load-position ()
 	"Loads the saved position to return when no longer visible."
@@ -367,12 +367,12 @@ The highlighting is limited to the visible region of the window."
 		(remove-overlays nil nil 'face 'sticky-point-highlight-tag-error)))
 
 ;;;###autoload
-(define-minor-mode sticky-point-indent-guide-mode
+(define-minor-mode sticky-point-indent-guides-mode
 	"Draw vertical indentation guides within the block.
 The highlighting is limited to the visible region of the window."
 	:lighter " SP-Ind"
 	:group 'sticky-point
-	(if sticky-point-indent-guide-mode
+	(if sticky-point-indent-guides-mode
 		(progn
 			(unless sticky-point-mode (sticky-point-mode 1))
 			(when (and sticky-point-mode buffer-file-name)
@@ -392,7 +392,7 @@ window while scrolling, as in modern editors.	 It also offers three optional
 highlighting options:
 	`sticky-point-highlight-symbol-mode'
 	`sticky-point-highlight-paren-mode'
-	`sticky-point-indent-guide-mode'."
+	`sticky-point-indent-guides-mode'."
 	:lighter " SC"
 	:group 'sticky-point
 	(if sticky-point-mode
