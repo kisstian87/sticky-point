@@ -1,4 +1,4 @@
-# sticky-point
+# Emacs sticky-point
 
 > Preserve the logical position of the cursor while scrolling in Emacs.
 
@@ -88,7 +88,7 @@ GitHub repository:
 	(global-sticky-point-mode t)
 	;; Uncomment the sub-modes you want, globally:
 	;; (sticky-point-highlight-symbol-mode t)
-	;; (sticky-point-highlight-parens-mode t)
+	;; (sticky-point-show-parens-mode t)
 	;; (sticky-point-indent-guides-mode t)
 	)
 ```
@@ -112,7 +112,7 @@ with a recipe:
 	(global-sticky-point-mode t)
 	;; Uncomment the sub-modes you want, globally:
 	;; (sticky-point-highlight-symbol-mode t)
-	;; (sticky-point-highlight-parens-mode t)
+	;; (sticky-point-show-parens-mode t)
 	;; (sticky-point-indent-guides-mode t)
 	)
 ```
@@ -147,7 +147,7 @@ major mode satisfies `(derived-mode-p 'prog-mode 'text-mode 'conf-mode)`.
 (require 'sticky-point)
 (global-sticky-point-mode t)
 (sticky-point-highlight-symbol-mode t)
-(sticky-point-highlight-parens-mode t)
+(sticky-point-show-parens-mode t)
 (sticky-point-indent-guides-mode t)
 ```
 
@@ -178,7 +178,7 @@ the rest.
 	(global-sticky-point-mode t)
 	;; Uncomment the sub-modes you want, globally:
 	;; (sticky-point-highlight-symbol-mode t)
-	;; (sticky-point-highlight-parens-mode t)
+	;; (sticky-point-show-parens-mode t)
 	;; (sticky-point-indent-guides-mode t)
 	)
 ```-->
