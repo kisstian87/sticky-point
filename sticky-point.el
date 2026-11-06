@@ -132,7 +132,7 @@ disappears from the visible window."
 (defvar-local sticky-point--highlight-symbol-timer nil "Highlight symbol timer.")
 (defvar-local sticky-point--search-parentheses-timer nil "Search parentheses timer.")
 (defvar-local sticky-point--indent-overlay-timer nil "Indent overlay timer.")
-(defvar sticky-point--show-paren-mode-original nil "Original show paren mode.")
+(defvar sticky-point--show-parens-mode-original nil "Original show paren mode.")
 
 ;;; Highlight symbol
 (defun sticky-point--highlight-symbol-timer-func (position)
@@ -397,7 +397,7 @@ highlighting options:
 	:group 'sticky-point
 	(if sticky-point-mode
 		(progn
-			(unless sticky-point--show-paren-mode-original (setq sticky-point--show-paren-mode-original show-paren-mode))
+			(unless sticky-point--show-parens-mode-original (setq sticky-point--show-parens-mode-original show-paren-mode))
 			(show-paren-mode -1)
 			(setq sticky-point--cursor-type-original cursor-type)
 			(add-hook 'post-command-hook #'sticky-point--save-position nil t)
@@ -407,11 +407,11 @@ highlighting options:
 			(remove-overlays nil nil 'face 'sticky-point-highlight-paren1)
 			(remove-overlays nil nil 'face 'sticky-point-highlight-paren2)
 			(remove-overlays nil nil 'face 'sticky-point-highlight-paren-error)
-			(remove-overlays nil nil 'face 'sticky-point-nested-level)
+			(remove-overlays nil nil 'face 'stpaicky-point-nested-level)
 			(remove-overlays nil nil 'face 'sticky-point-highlight-tag)
 			(remove-overlays nil nil 'face 'sticky-point-highlight-tag-error)
 			(setq sticky-point--current-position nil)
-			(show-paren-mode (if sticky-point--show-paren-mode-original 1 -1))
+			(show-paren-mode (if sticky-point--show-parens-mode-original 1 -1))
 			(remove-hook 'post-command-hook #'sticky-point--save-position t)
 			(remove-hook 'pre-command-hook #'sticky-point--load-position t)
 			(when sticky-point--highlight-symbol-timer
