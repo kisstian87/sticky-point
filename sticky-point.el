@@ -354,11 +354,11 @@ highlighting options:
 			(add-hook 'sticky-point-mode-hook
 				(lambda ()
 					(when sticky-point-mode
-						(when sticky-point-highlight-symbol-mode
+						(when (default-value 'sticky-point-highlight-symbol-mode)
 							(sticky-point-highlight-symbol-mode 1))
-						(when sticky-point-indent-guides-mode
+						(when (default-value 'sticky-point-indent-guides-mode)
 							(sticky-point-indent-guides-mode 1))
-						(when sticky-point-show-parens-mode
+						(when (default-value 'sticky-point-show-parens-mode)
 							(sticky-point-show-parens-mode 1))))))
 		(progn
 			(remove-overlays nil nil 'face 'sticky-point-highlight-symbol)
