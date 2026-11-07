@@ -350,7 +350,16 @@ highlighting options:
 			(show-paren-mode -1)
 			(setq sticky-point--cursor-type-original cursor-type)
 			(add-hook 'post-command-hook #'sticky-point--save-position nil t)
-			(add-hook 'pre-command-hook #'sticky-point--load-position nil t))
+			(add-hook 'pre-command-hook #'sticky-point--load-position nil t)
+			(add-hook 'sticky-point-mode-hook
+				(lambda ()
+					(when sticky-point-mode
+						(when sticky-point-highlight-symbol-mode
+							(sticky-point-highlight-symbol-mode 1))
+						(when sticky-point-indent-guides-mode
+							(sticky-point-indent-guides-mode 1))
+						(when sticky-point-show-parens-mode
+							(sticky-point-show-parens-mode 1))))))
 		(progn
 			(remove-overlays nil nil 'face 'sticky-point-highlight-symbol)
 			(remove-overlays nil nil 'face 'sticky-point-highlight-paren1)
@@ -373,14 +382,10 @@ highlighting options:
 				(cancel-timer sticky-point--indent-overlay-timer)
 				(setq sticky-point--indent-overlay-timer nil)))))
 
-(defun sticky-point-mode--turn-on ()
-	"Turn on `sticky-point-mode' unconditionally.
-Used as the TURN-ON function of `global-sticky-point-mode'."
-	(sticky-point-mode 1))
 ;;;###autoload
 (define-globalized-minor-mode global-sticky-point-mode
 	sticky-point-mode
-	sticky-point-mode--turn-on
+	(lambda () (sticky-point-mode 1))
 	:group 'sticky-point)
 
 ;;;###autoload
