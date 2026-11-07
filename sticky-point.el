@@ -382,10 +382,20 @@ highlighting options:
 				(cancel-timer sticky-point--indent-overlay-timer)
 				(setq sticky-point--indent-overlay-timer nil)))))
 
+(defun global--sticky-point-mode ()
+	"Enable hooks globally."
+	(sticky-point-mode 1)
+	(when (default-value 'sticky-point-highlight-symbol-mode)
+		(sticky-point-highlight-symbol-mode 1))
+	(when (default-value 'sticky-point-indent-guides-mode)
+		(sticky-point-indent-guides-mode 1))
+	(when (default-value 'sticky-point-show-parens-mode)
+		(sticky-point-show-parens-mode 1))
+	)
 ;;;###autoload
 (define-globalized-minor-mode global-sticky-point-mode
 	sticky-point-mode
-	(lambda () (sticky-point-mode 1))
+	global--sticky-point-mode
 	:group 'sticky-point)
 
 ;;;###autoload
