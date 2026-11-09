@@ -209,8 +209,8 @@ the logical cursor". You can add commands from third-party packages
 ### Delays
 
 ```elisp
-(setq sticky-point-delay-symbol			 0.1)		; seconds
-(setq sticky-point-delay-indent			 0.1)
+(setq sticky-point-delay-symbol 0.1)		; seconds
+(setq sticky-point-delay-indent 0.1)
 (setq sticky-point-delay-parentheses 0.1)
 ```
 
