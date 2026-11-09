@@ -243,7 +243,7 @@ customized independently:
 
 - `sticky-point-nested-level`
 - `sticky-point-highlight-parens`
-- `sticky-point-highlight-parens-nested`
+- `sticky-point-highlight-nested-parens`
 - `sticky-point-highlight-paren-error`
 - `sticky-point-highlight-symbol`
 - `sticky-point-highlight-tag`
