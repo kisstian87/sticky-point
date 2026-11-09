@@ -62,29 +62,25 @@ highlighting options:
 	`sticky-point-show-parens-mode'
 	`sticky-point-indent-guides-mode'."
 	:type 'boolean
-	:local t
-	:group 'sticky-point)
+	:local t)
 ;;;###autoload
 (defcustom sticky-point-highlight-symbol-mode nil
 	"Highlight all occurrences of the symbol under the cursor.
 The highlighting is limited to the visible region of the window."
 	:type 'boolean
-	:group 'sticky-point
-	:require 'sticky-point)
+	:group 'sticky-point)
 ;;;###autoload
 (defcustom sticky-point-show-parens-mode nil
 	"Highlight the parentheses that surround the cursor.
 The highlighting is limited to the visible region of the window."
 	:type 'boolean
-	:group 'sticky-point
-	:require 'sticky-point)
+	:group 'sticky-point)
 ;;;###autoload
  (defcustom sticky-point-indent-guides-mode nil
- 	"Draw vertical indentation guides within the block.
+	"Draw vertical indentation guides within the block.
  The highlighting is limited to the visible region of the window."
- 	:type 'boolean
- 	:group 'sticky-point
- 	:require 'sticky-point)
+	:type 'boolean
+	:group 'sticky-point)
 ;;;###autoload
 (defcustom sticky-point-scroll-commands
 	'(mwheel-scroll scroll-up scroll-down scroll-left scroll-right scroll-up-command scroll-down-command scroll-other-window scroll-other-window-down scroll-bar-scroll-up scroll-bar-scroll-down scroll-bar-drag scroll-bar-movement scroll-bar-toolkit-scroll scroll-bar-toolkit-horizontal-scroll ignore-preserving-kill-region treemacs-leftclick-action company-abort corfu-quit save-buffer pixel-scroll-precision handle-select-window handle-switch-frame lsp-ui-doc--handle-mouse-movement pixel-scroll-start-momentum pixel-scroll-interpolate-down pixel-scroll-interpolate-up scroll-up-line scroll-down-line pixel-scroll-precision-scroll-down pixel-scroll-precision-scroll-up-page)
@@ -340,6 +336,18 @@ disappears from the visible window."
 					(setq cursor-type sticky-point--cursor-type-original)
 					(setq face-remapping-alist(assq-delete-all 'line-number-current-line face-remapping-alist)))))))
 
+(defun sticky-point--sync-sub-modes ()
+	"Sync sub-mode state with the global configuration."
+		(if (default-value 'sticky-point-highlight-symbol-mode)
+				(sticky-point-highlight-symbol-mode 1)
+			(sticky-point-highlight-symbol-mode -1))
+		(if (default-value 'sticky-point-show-parens-mode)
+				(sticky-point-show-parens-mode 1)
+			(sticky-point-show-parens-mode -1))
+		(if (default-value 'sticky-point-indent-guides-mode)
+				(sticky-point-indent-guides-mode 1)
+			(sticky-point-indent-guides-mode -1)))
+
 ;;;###autoload
 (define-minor-mode sticky-point-mode
 	"Preserves the cursor position when scrolling and optionally highlights.
@@ -353,48 +361,43 @@ highlighting options:
 	:global nil
 	:group 'sticky-point
 	(if sticky-point-mode
-    (progn
-      (add-hook 'post-command-hook #'sticky-point--save-position)
-      (add-hook 'pre-command-hook #'sticky-point--load-position)
+		(progn
+			(setq sticky-point--cursor-type-original cursor-type)
+			(add-hook 'sticky-point-mode-hook #'sticky-point--sync-sub-modes)
+			(add-hook 'post-command-hook #'sticky-point--save-position)
+			(add-hook 'pre-command-hook #'sticky-point--load-position)
 			(unless sticky-point--show-parens-mode-original
-        (setq sticky-point--show-parens-mode-original show-paren-mode))
-      ;;(show-paren-mode -1)
-      (setq sticky-point--cursor-type-original cursor-type)
-      (when (default-value 'sticky-point-highlight-symbol-mode)
-        (sticky-point-highlight-symbol-mode 1))
-
-      (when (default-value 'sticky-point-show-parens-mode)
-        (sticky-point-show-parens-mode 1))
-
-      (when (default-value 'sticky-point-indent-guides-mode)
-        (sticky-point-indent-guides-mode 1)))
-  (progn
-    (remove-overlays nil nil 'face 'sticky-point-highlight-symbol)
-    (remove-overlays nil nil 'face 'sticky-point-highlight-paren1)
-    (remove-overlays nil nil 'face 'sticky-point-highlight-paren2)
-    (remove-overlays nil nil 'face 'sticky-point-highlight-paren-error)
-    (remove-overlays nil nil 'face 'sticky-point-nested-level)
-    (remove-overlays nil nil 'face 'sticky-point-highlight-tag)
-    (remove-overlays nil nil 'face 'sticky-point-highlight-tag-error)
-    (setq sticky-point--current-position nil)
-    (show-paren-mode (if sticky-point--show-parens-mode-original 1 -1))
-    (remove-hook 'post-command-hook #'sticky-point--save-position t)
-    (remove-hook 'pre-command-hook #'sticky-point--load-position t)
-    (when sticky-point--highlight-symbol-timer
-      (cancel-timer sticky-point--highlight-symbol-timer)
-      (setq sticky-point--highlight-symbol-timer nil))
-    (when sticky-point--search-parentheses-timer
-      (cancel-timer sticky-point--search-parentheses-timer)
-      (setq sticky-point--search-parentheses-timer nil))
-    (when sticky-point--indent-overlay-timer
-      (cancel-timer sticky-point--indent-overlay-timer)
-      (setq sticky-point--indent-overlay-timer nil)))))
+				(setq sticky-point--show-parens-mode-original show-paren-mode))
+			(show-paren-mode -1)
+			)
+	(progn
+		(remove-overlays nil nil 'face 'sticky-point-highlight-symbol)
+		(remove-overlays nil nil 'face 'sticky-point-highlight-paren1)
+		(remove-overlays nil nil 'face 'sticky-point-highlight-paren2)
+		(remove-overlays nil nil 'face 'sticky-point-highlight-paren-error)
+		(remove-overlays nil nil 'face 'sticky-point-nested-level)
+		(remove-overlays nil nil 'face 'sticky-point-highlight-tag)
+		(remove-overlays nil nil 'face 'sticky-point-highlight-tag-error)
+		(setq sticky-point--current-position nil)
+		(show-paren-mode (if sticky-point--show-parens-mode-original 1 -1))
+		(remove-hook 'post-command-hook #'sticky-point--save-position t)
+		(remove-hook 'pre-command-hook #'sticky-point--load-position t)
+		(remove-hook 'sticky-point-mode-hook #'sticky-point--sync-sub-modes)
+		(when sticky-point--highlight-symbol-timer
+			(cancel-timer sticky-point--highlight-symbol-timer)
+			(setq sticky-point--highlight-symbol-timer nil))
+		(when sticky-point--search-parentheses-timer
+			(cancel-timer sticky-point--search-parentheses-timer)
+			(setq sticky-point--search-parentheses-timer nil))
+		(when sticky-point--indent-overlay-timer
+			(cancel-timer sticky-point--indent-overlay-timer)
+			(setq sticky-point--indent-overlay-timer nil)))))
 
 (defun sticky-point-mode--global ()
-  "Enable `sticky-point-mode' in the current buffer.
+	"Enable `sticky-point-mode' in the current buffer.
 Sub-modes are activated inside `sticky-point-mode' based on the
 user's global configuration."
-  (sticky-point-mode 1))
+	(sticky-point-mode 1))
 ;;;###autoload
 (define-globalized-minor-mode global-sticky-point-mode
 	sticky-point-mode
