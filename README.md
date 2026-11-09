@@ -145,9 +145,10 @@ major mode satisfies `(derived-mode-p 'prog-mode 'text-mode 'conf-mode)`.
 ```elisp
 (require 'sticky-point)
 (global-sticky-point-mode t)
-(global-sticky-point-highlight-symbol-mode t)
-(global-sticky-point-show-parens-mode t)
-(global-sticky-point-indent-guides-mode t)
+;; Uncomment the sub-modes you want, globally:
+;;(global-sticky-point-highlight-symbol-mode t)
+;;(global-sticky-point-show-parens-mode t)
+;;(global-sticky-point-indent-guides-mode t)
 ```
 
 ### Enable a sub-mode only in specific buffers
@@ -159,9 +160,10 @@ buffers, use the local commands in a hook:
 (add-hook 'python-mode-hook
 					(lambda ()
 						(sticky-point-mode t)
-						(sticky-point-highlight-symbol-mode t)
-						(sticky-point-indent-guides-mode t)
-						(sticky-point-show-parens-mode t)
+						;; Uncomment the sub-modes you want, globally:
+						;;(sticky-point-highlight-symbol-mode t)
+						;;(sticky-point-indent-guides-mode t)
+						;;(sticky-point-show-parens-mode t)
 						))
 ```
 
@@ -173,9 +175,10 @@ preservation everywhere and the visual context only where you want it.
 ```elisp
 (require 'sticky-point)
 (add-hook 'prog-mode-hook #'sticky-point-mode)
-(add-hook 'prog-mode-hook #'sticky-point-highlight-symbol-mode)
-(add-hook 'prog-mode-hook #'sticky-point-indent-guides-mode)
-(add-hook 'prog-mode-hook #'sticky-point-show-parens-mode)
+;; Uncomment the sub-modes you want, globally:
+;;(add-hook 'prog-mode-hook #'sticky-point-highlight-symbol-mode)
+;;(add-hook 'prog-mode-hook #'sticky-point-indent-guides-mode)
+;;(add-hook 'prog-mode-hook #'sticky-point-show-parens-mode)
 ```
 
 ### Disable in a specific buffer
