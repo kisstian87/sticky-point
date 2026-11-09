@@ -390,7 +390,7 @@ highlighting options:
       (cancel-timer sticky-point--indent-overlay-timer)
       (setq sticky-point--indent-overlay-timer nil)))))
 
-(defun global--sticky-point-mode ()
+(defun sticky-point-mode--global ()
   "Enable `sticky-point-mode' in the current buffer.
 Sub-modes are activated inside `sticky-point-mode' based on the
 user's global configuration."
@@ -398,7 +398,7 @@ user's global configuration."
 ;;;###autoload
 (define-globalized-minor-mode global-sticky-point-mode
 	sticky-point-mode
-	global--sticky-point-mode
+	sticky-point-mode--global
 	:group 'sticky-point)
 
 ;;;###autoload
