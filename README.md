@@ -102,6 +102,13 @@ recipe; `quelpa` understands it natively.
 
 The `:type git` field is optional if `straight-default-vc` is already `git`.
 
+### Note on `use-package-always-ensure`
+
+If you have `(setq use-package-always-ensure t)`, add `:ensure nil` to the
+`quelpa` and `straight` declarations above. Otherwise `use-package` will
+try to install the package from MELPA via `package.el` and fail because
+the recipe lives in one of the other fetchers.
+
 ### From source
 
 Clone the repository somewhere on your `load-path`:
@@ -117,13 +124,6 @@ Then add it to your config:
 (require 'sticky-point)
 ```
 
-
-### Note on `use-package-always-ensure`
-
-If you have `(setq use-package-always-ensure t)`, add `:ensure nil` to the
-`quelpa` and `straight` declarations above. Otherwise `use-package` will
-try to install the package from MELPA via `package.el` and fail because
-the recipe lives in one of the other fetchers.
 
 ## Usage
 
