@@ -1,4 +1,4 @@
-# Emacs sticky-point
+# sticky-point
 
 > Preserve the logical position of the cursor while scrolling in Emacs.
 
@@ -37,16 +37,19 @@ try.
 
 ## Features
 
-| Feature | Default | Description |
+| Feature | Buffer-local mode | Global mode |
 |---|---|---|
-| Cursor position preservation | Always on with the base mode | Keeps point anchored when scrolled out of view |
-| Symbol highlighting | Off | Highlights every occurrence of the symbol at point in the visible region |
-| Paren/tag highlighting | Off | Highlights the matching `(`/`)`, `[`/`]`, `{`/`}` or HTML/XML tag pair around point |
-| Indent guides | Off | Draws vertical guides at the current indentation level |
+| Preserve cursor position | `sticky-point-mode` | `global-sticky-point-mode` |
+| Highlight the symbol at point | `sticky-point-highlight-symbol-mode` | `global-sticky-point-highlight-symbol-mode` |
+| Highlight surrounding parens/tags | `sticky-point-show-parens-mode` | `global-sticky-point-show-parens-mode` |
+| Draw indent guides | `sticky-point-indent-guides-mode` | `global-sticky-point-indent-guides-mode` |
+
+All sub-modes are off by default and require `sticky-point-mode` to be
+active in the buffer.
 
 ## Installation
-<!--
-### From MELPA (once published)
+
+<!--### From MELPA (once published)
 
 ```elisp
 (require 'package)
@@ -57,7 +60,48 @@ try.
 ;; Then:
 ;; M-x package-install RET sticky-point RET
 ```
+
 -->
+### With `quelpa`
+
+```elisp
+(use-package sticky-point
+	:quelpa (sticky-point
+					 :fetcher github
+					 :repo "kisstian87/sticky-point")
+	:ensure nil
+	:config
+	(global-sticky-point-mode t)
+	;; Uncomment the sub-modes you want, globally:
+	;;(global-sticky-point-highlight-symbol-mode t)
+	;;(global-sticky-point-indent-guides-mode t)
+	;;(global-sticky-point-show-parens-mode t)
+	)
+```
+
+The `(fetcher github :repo "user/repo")` form is the standard MELPA-style
+recipe; `quelpa` understands it natively.
+
+### With `straight.el`
+
+```elisp
+(use-package sticky-point
+	:straight (sticky-point
+						 :type git
+						 :host github
+						 :repo "kisstian87/sticky-point")
+	:ensure nil
+	:config
+	(global-sticky-point-mode t)
+	;; Uncomment the sub-modes you want, globally:
+	;;(global-sticky-point-highlight-symbol-mode t)
+	;;(global-sticky-point-indent-guides-mode t)
+	;;(global-sticky-point-show-parens-mode t)
+	)
+```
+
+The `:type git` field is optional if `straight-default-vc` is already `git`.
+
 ### From source
 
 Clone the repository somewhere on your `load-path`:
@@ -73,51 +117,6 @@ Then add it to your config:
 (require 'sticky-point)
 ```
 
-### With `quelpa`
-
-If you use `quelpa` and `quelpa-use-package`, install directly from the
-GitHub repository:
-
-```elisp
-(use-package sticky-point
-	:quelpa (sticky-point
-		:fetcher github
-		:repo "kisstian87/sticky-point")
-	:ensure nil
-	:config
-	(global-sticky-point-mode t)
-	;; Uncomment the sub-modes you want, globally:
-	;; (sticky-point-highlight-symbol-mode t)
-	;; (sticky-point-show-parens-mode t)
-	;; (sticky-point-indent-guides-mode t)
-	)
-```
-
-The `(fetcher github :repo "user/repo")` form is the standard MELPA-style
-recipe; `quelpa` understands it natively.
-
-### With `straight.el`
-
-If you use `straight.el` with `use-package`, use the `:straight` keyword
-with a recipe:
-
-```elisp
-(use-package sticky-point
-	:straight (sticky-point
-		:type git
-		:host github
-		:repo "kisstian87/sticky-point")
-	:ensure nil
-	:config
-	(global-sticky-point-mode t)
-	;; Uncomment the sub-modes you want, globally:
-	;; (sticky-point-highlight-symbol-mode t)
-	;; (sticky-point-show-parens-mode t)
-	;; (sticky-point-indent-guides-mode t)
-	)
-```
-
-The `:type git` field is optional if `straight-default-vc` is already `git`.
 
 ### Note on `use-package-always-ensure`
 
@@ -146,17 +145,37 @@ major mode satisfies `(derived-mode-p 'prog-mode 'text-mode 'conf-mode)`.
 ```elisp
 (require 'sticky-point)
 (global-sticky-point-mode t)
-(sticky-point-highlight-symbol-mode t)
-(sticky-point-show-parens-mode t)
-(sticky-point-indent-guides-mode t)
+(global-sticky-point-highlight-symbol-mode t)
+(global-sticky-point-show-parens-mode t)
+(global-sticky-point-indent-guides-mode t)
 ```
+
+### Enable a sub-mode only in specific buffers
+
+The sub-modes are buffer-local. If you only want them in, say, Python
+buffers, use the local commands in a hook:
+
+```elisp
+(add-hook 'python-mode-hook
+					(lambda ()
+						(sticky-point-mode t)
+						(sticky-point-highlight-symbol-mode t)
+						(sticky-point-indent-guides-mode t)
+						(sticky-point-show-parens-mode t)
+						))
+```
+
+Combined with `global-sticky-point-mode`, this gives you the cursor
+preservation everywhere and the visual context only where you want it.
 
 ### Selectively, only in programming modes
 
 ```elisp
 (require 'sticky-point)
-
 (add-hook 'prog-mode-hook #'sticky-point-mode)
+(add-hook 'prog-mode-hook #'sticky-point-highlight-symbol-mode)
+(add-hook 'prog-mode-hook #'sticky-point-indent-guides-mode)
+(add-hook 'prog-mode-hook #'sticky-point-show-parens-mode)
 ```
 
 ### Disable in a specific buffer
@@ -167,21 +186,6 @@ M-x sticky-point-mode
 
 The mode is buffer-local, so disabling it in one buffer does not affect
 the rest.
-<!--
-### With `use-package`
-
-```elisp
-(use-package sticky-point
-	:ensure t
-	:hook
-	:config
-	(global-sticky-point-mode t)
-	;; Uncomment the sub-modes you want, globally:
-	;; (sticky-point-highlight-symbol-mode t)
-	;; (sticky-point-show-parens-mode t)
-	;; (sticky-point-indent-guides-mode t)
-	)
-```-->
 
 ## Configuration
 
@@ -238,8 +242,8 @@ All faces are defined in the `sticky-point-faces` group and can be
 customized independently:
 
 - `sticky-point-nested-level`
-- `sticky-point-highlight-paren1`
-- `sticky-point-highlight-paren2`
+- `sticky-point-highlight-parens`
+- `sticky-point-highlight-parens-nested`
 - `sticky-point-highlight-paren-error`
 - `sticky-point-highlight-symbol`
 - `sticky-point-highlight-tag`
@@ -250,15 +254,15 @@ Example:
 ```elisp
 (custom-set-faces
  '(sticky-point-highlight-symbol ((t (:background "#2f447f" :foreground "#ffffff"))))
- '(sticky-point-nested-level		((t (:foreground "#6ae4b9")))))
+ '(sticky-point-nested-level		((t (:foreground "#6ae4b9"))))
+ )
 ```
 
 ## Compatibility
 
 - Emacs 28.1 or later
+- Works with `cua-mode`
 - Works with `pixel-scroll-precision-mode`
-- Works with `show-paren-mode` (temporarily disables it while active, restores on exit)
-- Works with `evil-mode` (scroll commands from Evil are in the default list)
 - Python-aware: uses `python-nav-backward-up-list` / `python-nav-up-list`
 	in `python-mode` and `python-ts-mode` for indent guide detection
 
