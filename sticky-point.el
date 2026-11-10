@@ -215,6 +215,12 @@ disappears from the visible window."
 				(remove-overlays start end 'face 'sticky-point-nested-level)
 				(save-excursion
 					(goto-char position)
+					(when (and (char-before)
+									(member (char-to-string (char-before)) (mapcar #'cadr arreglo)))
+						(backward-char 1))
+					(when (and (char-after)
+									(member (char-to-string (char-after)) (mapcar #'car arreglo)))
+						(forward-char 1))
 					(when (member (char-to-string (char-before)) (mapcar #'cadr array))
 						(backward-char 1))
 					(when (member (char-to-string (char-after)) (mapcar #'car array))
