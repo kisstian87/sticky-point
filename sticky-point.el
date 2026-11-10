@@ -157,9 +157,9 @@ disappears from the visible window."
 	:group 'sticky-point)
 
 ;;; Faces
-(defface sticky-point-nested-level '((t (:foreground "#6ae4b9"))) "Nested level." :group 'sticky-point-faces)
+(defface sticky-point-nested-level '((t (:foreground "#1d611d"))) "Nested level." :group 'sticky-point-faces)
 (defface sticky-point-highlight-parens '((t (:background "#2f9f2f" :foreground "#ffffff"))) "Highlight parentheses." :group 'sticky-point-faces)
-(defface sticky-point-highlight-nested-parens '((t (:background "#6ae4b9" :foreground "#ffffff"))) "Highlight parentheses." :group 'sticky-point-faces)
+(defface sticky-point-highlight-nested-parens '((t (:background "#1d611d" :foreground "#ffffff"))) "Highlight parentheses." :group 'sticky-point-faces)
 (defface sticky-point-highlight-paren-error '((t (:background "#550000" :foreground "#ffffff"))) "Parentheses error." :group 'sticky-point-faces)
 (defface sticky-point-highlight-symbol '((t (:background "#2f447f" :foreground "#ffffff"))) "Highlight symbol." :group 'sticky-point-faces)
 (defface sticky-point-highlight-tag '((t (:background "#444400" :foreground "#ffffff"))) "Highlight html tag." :group 'sticky-point-faces)
