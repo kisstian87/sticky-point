@@ -216,14 +216,10 @@ disappears from the visible window."
 				(save-excursion
 					(goto-char position)
 					(when (and (char-before)
-									(member (char-to-string (char-before)) (mapcar #'cadr arreglo)))
+										 (member (char-to-string (char-before)) (mapcar #'cadr array)))
 						(backward-char 1))
 					(when (and (char-after)
-									(member (char-to-string (char-after)) (mapcar #'car arreglo)))
-						(forward-char 1))
-					(when (member (char-to-string (char-before)) (mapcar #'cadr array))
-						(backward-char 1))
-					(when (member (char-to-string (char-after)) (mapcar #'car array))
+										 (member (char-to-string (char-after)) (mapcar #'car array)))
 						(forward-char 1))
 					(when (ignore-errors (if (memq major-mode '(python-mode python-ts-mode)) (python-nav-backward-up-list 1) (backward-up-list 1)) t)
 						(let* ((start2 (+ 1 (point)))
@@ -294,7 +290,6 @@ disappears from the visible window."
 										(setq string (nth 3 (syntax-ppss position_aux)))
 										(setq comment (nth 4 (syntax-ppss position_aux)))
 										(overlay-put (make-overlay position_aux (1+ position_aux)) 'face 'sticky-point-highlight-parens)
-										
 										(if (and (< (1+ position_aux) (point-max)) (string= (char-to-string (char-after (1+ position_aux))) parentheses2))
 											(progn
 												(overlay-put (make-overlay (1+ position_aux) (+ 2 position_aux)) 'face 'sticky-point-highlight-paren1)
