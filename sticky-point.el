@@ -159,7 +159,7 @@ disappears from the visible window."
 ;;; Faces
 (defface sticky-point-nested-level '((t (:foreground "#6ae4b9"))) "Nested level." :group 'sticky-point-faces)
 (defface sticky-point-highlight-parens '((t (:background "#2f9f2f" :foreground "#ffffff"))) "Highlight parentheses." :group 'sticky-point-faces)
-(defface sticky-point-highlight-nested-parens '((t (:background "#2f9f2f" :foreground "#ffffff"))) "Highlight parentheses." :group 'sticky-point-faces)
+(defface sticky-point-highlight-nested-parens '((t (:background "#40da40" :foreground "#ffffff"))) "Highlight parentheses." :group 'sticky-point-faces)
 (defface sticky-point-highlight-paren-error '((t (:background "#550000" :foreground "#ffffff"))) "Parentheses error." :group 'sticky-point-faces)
 (defface sticky-point-highlight-symbol '((t (:background "#2f447f" :foreground "#ffffff"))) "Highlight symbol." :group 'sticky-point-faces)
 (defface sticky-point-highlight-tag '((t (:background "#444400" :foreground "#ffffff"))) "Highlight html tag." :group 'sticky-point-faces)
@@ -288,7 +288,15 @@ disappears from the visible window."
 										(setq string (nth 3 (syntax-ppss position_aux)))
 										(setq comment (nth 4 (syntax-ppss position_aux)))
 										(overlay-put (make-overlay position_aux (1+ position_aux)) 'face 'sticky-point-highlight-parens)
-										(when (or (string= character1 parentheses2) (string= character2 parentheses2))(goto-char (+ position_aux 1)))
+										
+										(if (and (< (1+ position_aux) (point-max)) (string= (char-to-string (char-after (1+ position_aux))) parentheses2))
+											(progn
+												(overlay-put (make-overlay (1+ position_aux) (+ 2 position_aux)) 'face 'sticky-point-highlight-paren1)
+												(setq pair t)
+												(setq counter -50))
+											(when (or (string= character1 parentheses2) (string= character2 parentheses2))
+												(goto-char (+ position_aux 1))))
+										
 										(while (and (not (eq (abs counter) 50)) (if (or (string= character1 parentheses1) (string= character2 parentheses1)) (re-search-forward (if (string= parentheses1 "[") "[][]" (concat "[" parentheses1 parentheses2 "]")) (point-max) t) (re-search-backward (if (string= parentheses1 "[") "[][]" (concat "[" parentheses1 parentheses2 "]")) (point-min) t)))
 											(when (and
 															(eq string (nth 3 (syntax-ppss (point))))
