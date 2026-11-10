@@ -158,12 +158,12 @@ disappears from the visible window."
 
 ;;; Faces
 (defface sticky-point-nested-level '((t (:foreground "#6ae4b9"))) "Nested level." :group 'sticky-point-faces)
-(defface sticky-point-highlight-nested-parens '((t (:background "#277f2f" :foreground "#ffffff"))) "Highlight parentheses." :group 'sticky-point-faces)
-(defface sticky-point-highlight-parens '((t (:background "#2f7f9f" :foreground "#ffffff"))) "Highlight parentheses." :group 'sticky-point-faces)
+(defface sticky-point-highlight-parens '((t (:background "#2f9f2f" :foreground "#ffffff"))) "Highlight parentheses." :group 'sticky-point-faces)
+(defface sticky-point-highlight-nested-parens '((t (:background "#2f9f2f" :foreground "#ffffff"))) "Highlight parentheses." :group 'sticky-point-faces)
 (defface sticky-point-highlight-paren-error '((t (:background "#550000" :foreground "#ffffff"))) "Parentheses error." :group 'sticky-point-faces)
 (defface sticky-point-highlight-symbol '((t (:background "#2f447f" :foreground "#ffffff"))) "Highlight symbol." :group 'sticky-point-faces)
-(defface sticky-point-highlight-tag '((t (:background "#444400"))) "Highlight html tag." :group 'sticky-point-faces)
-(defface sticky-point-highlight-tag-error '((t (:background "#550000"))) "Highlight html tag error." :group 'sticky-point-faces)
+(defface sticky-point-highlight-tag '((t (:background "#444400" :foreground "#ffffff"))) "Highlight html tag." :group 'sticky-point-faces)
+(defface sticky-point-highlight-tag-error '((t (:background "#550000" :foreground "#ffffff"))) "Highlight html tag error." :group 'sticky-point-faces)
 
 ;;; Variables
 (defvar-local sticky-point--cursor-type-original cursor-type "Original cursor type.")
@@ -211,7 +211,7 @@ disappears from the visible window."
 					 (end (min (or (window-end nil t) (point-max)) (point-max)))
 					 (arreglo '(("(" ")") ("[" "]") ("{" "}"))))
 			(when (< start end)
-				(remove-overlays start end 'face 'sticky-point-highlight-paren2)
+				(remove-overlays start end 'face 'sticky-point-highlight-nested-parens)
 				(remove-overlays start end 'face 'sticky-point-nested-level)
 				(save-excursion
 					(goto-char position)
@@ -227,7 +227,7 @@ disappears from the visible window."
 								(dolist (p (list (1- inicio) (1- final)))
 									(when (and (>= p start) (< p end) (not (eq (char-syntax (char-after p)) ?w)))
 										(let ((ov (make-overlay p (1+ p))))
-											(overlay-put ov 'face 'sticky-point-highlight-paren2))))
+											(overlay-put ov 'face 'sticky-point-highlight-nested-parens))))
 								(goto-char (max inicio start))
 								(while (< (point) (min final end))
 									(let ((line-start (point)))
@@ -280,7 +280,10 @@ disappears from the visible window."
 											 (contador 0))
 									(when (or (string= caracter1 parentheses1) (string= caracter2 parentheses1) (string= caracter1 parentheses2) (string= caracter2 parentheses2))
 										(when (or (string= symbol caracter1) (string= symbol caracter2)) (remove-overlays start end 'face 'sticky-point-highlight-symbol))
-										(when (or (string= caracter2 parentheses1) (string= caracter2 parentheses2)) (setq position_aux (- position_aux 1)))
+										(when (or (string= caracter2 parentheses2)
+														(and (string= caracter2 parentheses1)
+															(not (string= caracter1 parentheses1))))
+											(setq position_aux (- position_aux 1)))
 										(goto-char position_aux)
 										(setq string (nth 3 (syntax-ppss position_aux)))
 										(setq comentario (nth 4 (syntax-ppss position_aux)))
@@ -393,7 +396,7 @@ highlighting options:
 	(progn
 		(remove-overlays nil nil 'face 'sticky-point-highlight-symbol)
 		(remove-overlays nil nil 'face 'sticky-point-highlight-parens)
-		(remove-overlays nil nil 'face 'sticky-point-highlight-nested-parens)
+		(remove-overlays nil nil 'face 'sticky-point-highlight-parens)
 		(remove-overlays nil nil 'face 'sticky-point-highlight-paren-error)
 		(remove-overlays nil nil 'face 'sticky-point-nested-level)
 		(remove-overlays nil nil 'face 'sticky-point-highlight-tag)
@@ -442,7 +445,7 @@ The highlighting is limited to the visible region of the window."
 			(cancel-timer sticky-point--search-parentheses-timer)
 			(setq sticky-point--search-parentheses-timer nil))
 		(remove-overlays nil nil 'face 'sticky-point-highlight-parens)
-		(remove-overlays nil nil 'face 'sticky-point-highlight-nested-parens)
+		(remove-overlays nil nil 'face 'sticky-point-highlight-parens)
 		(remove-overlays nil nil 'face 'sticky-point-highlight-paren-error)
 		(remove-overlays nil nil 'face 'sticky-point-highlight-tag)
 		(remove-overlays nil nil 'face 'sticky-point-highlight-tag-error)))
@@ -462,7 +465,7 @@ The highlighting is limited to the visible region of the window."
 			(when sticky-point--indent-overlay-timer
 				(cancel-timer sticky-point--indent-overlay-timer)
 				(setq sticky-point--indent-overlay-timer nil))
-			(remove-overlays nil nil 'face 'sticky-point-highlight-nested-parens)
+			(remove-overlays nil nil 'face 'sticky-point-highlight-parens)
 			(remove-overlays nil nil 'face 'sticky-point-nested-level))))
 
 ;;;###autoload
