@@ -82,14 +82,22 @@ The highlighting is limited to the visible region of the window."
 ;;;###autoload
 (defcustom sticky-point-show-parens-mode nil
 	"Highlight the parentheses that surround the cursor.
-The highlighting is limited to the visible region of the window."
+The highlighting is limited to the visible region of the window.
+Highlight HTML/XML tags around cursor and flag unbalanced parentheses.
+The cursor's own paren pair is already highlighted by
+`sticky-point-indent-guides-mode' when active; this mode adds
+tag matching and error detection on top of it."
 	:type 'boolean
 	:require 'sticky-point
 	:group 'sticky-point)
 ;;;###autoload
 (defcustom global-sticky-point-show-parens-mode nil
 	"Highlight the parentheses that surround the cursor.
-The highlighting is limited to the visible region of the window."
+The highlighting is limited to the visible region of the window.
+Highlight HTML/XML tags around cursor and flag unbalanced parentheses.
+The cursor's own paren pair is already highlighted by
+`sticky-point-indent-guides-mode' when active; this mode adds
+tag matching and error detection on top of it."
 	:type 'boolean
 	:local nil
 	:require 'sticky-point
@@ -324,7 +332,7 @@ disappears from the visible window."
 									(overlay-put (make-overlay tag1 (+ tag2 1)) 'face 'sticky-point-highlight-tag)
 									(unless (or (string= (buffer-substring-no-properties (- tag2 1) tag2) "/") (member (replace-regexp-in-string "/" "" tag) array))
 										(if (not (string= (substring tag 0 1) "/"))
-											(progn	; APERTURA
+											(progn
 												(goto-char tag2)
 												(while (and (not pair) (re-search-forward (concat "<\\(/?\\)" (regexp-quote tag) "[^>]*>") (point-max) t))
 													(unless (nth 4 (syntax-ppss (point)))
@@ -335,7 +343,7 @@ disappears from the visible window."
 																(when (eq counter 0)
 																	(overlay-put (make-overlay (match-beginning 0) (match-end 0)) 'face 'sticky-point-highlight-tag)
 																	(setq pair t)))))))
-											(progn	; CIERRE
+											(progn
 												(goto-char tag1)
 												(while (and (not pair) (re-search-backward (concat "<\\(/?\\)" (regexp-quote (substring tag 1 (length tag))) "[^>]*>") (point-min) t))
 													(unless (nth 4 (syntax-ppss (point)))
@@ -346,7 +354,10 @@ disappears from the visible window."
 																(when (eq counter 0)
 																	(overlay-put (make-overlay (match-beginning 0) (match-end 0)) 'face 'sticky-point-highlight-tag)
 																	(setq pair t))))))))
-										(unless pair (overlay-put (make-overlay tag1 (+ tag2 1)) 'face 'sticky-point-highlight-tag-error))))))))))))
+										(unless pair
+											(let ((ov (make-overlay tag1 (+ tag2 1))))
+												(overlay-put ov 'face 'sticky-point-highlight-tag-error)
+												(overlay-put ov 'priority 100)))))))))))))
 
 (defun sticky-point--save-position ()
 	"Stores the original position in a variable to be able to return later."
