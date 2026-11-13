@@ -300,7 +300,7 @@ disappears from the visible window."
 										(overlay-put (make-overlay position_aux (1+ position_aux)) 'face 'sticky-point-highlight-parens)
 										(if (and (< (1+ position_aux) (point-max)) (string= (char-to-string (char-after (1+ position_aux))) parentheses2))
 											(progn
-												(overlay-put (make-overlay (1+ position_aux) (+ 2 position_aux)) 'face 'sticky-point-highlight-paren1)
+												(overlay-put (make-overlay (1+ position_aux) (+ 2 position_aux)) 'face 'sticky-point-highlight-parens)
 												(setq pair t)
 												(setq counter -50))
 											(when (or (string= character1 parentheses2) (string= character2 parentheses2))
