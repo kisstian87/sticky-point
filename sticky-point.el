@@ -298,7 +298,9 @@ disappears from the visible window."
 										(setq string (nth 3 (syntax-ppss position_aux)))
 										(setq comment (nth 4 (syntax-ppss position_aux)))
 										(overlay-put (make-overlay position_aux (1+ position_aux)) 'face 'sticky-point-highlight-parens)
-										(if (and (< (1+ position_aux) (point-max)) (string= (char-to-string (char-after (1+ position_aux))) parentheses2))
+										(if (and (equal (char-after position_aux) (string-to-char parentheses1))
+													(< (1+ position_aux) (point-max))
+													(string= (char-to-string (char-after (1+ position_aux))) parentheses2))
 											(progn
 												(overlay-put (make-overlay (1+ position_aux) (+ 2 position_aux)) 'face 'sticky-point-highlight-parens)
 												(setq pair t)
