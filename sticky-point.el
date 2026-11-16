@@ -361,6 +361,21 @@ disappears from the visible window."
 												(overlay-put ov 'face 'sticky-point-highlight-tag-error)
 												(overlay-put ov 'priority 100)))))))))))))
 
+(defun sticky-point--before-change (beg end)
+	"Remove sticky-point overlays near BEG/END before text is modified.
+Prevents overlays from expanding to cover newly typed characters."
+	(when sticky-point-mode
+		(let ((clear-beg (max (point-min) (1- beg)))
+					(clear-end (min (point-max) (1+ end))))
+			(remove-overlays clear-beg clear-end 'face 'hl-line)
+			(remove-overlays clear-beg clear-end 'face 'sticky-point-highlight-symbol)
+			(remove-overlays clear-beg clear-end 'face 'sticky-point-highlight-parens)
+			(remove-overlays clear-beg clear-end 'face 'sticky-point-highlight-nested-parens)
+			(remove-overlays clear-beg clear-end 'face 'sticky-point-highlight-paren-error)
+			(remove-overlays clear-beg clear-end 'face 'sticky-point-nested-level)
+			(remove-overlays clear-beg clear-end 'face 'sticky-point-highlight-tag)
+			(remove-overlays clear-beg clear-end 'face 'sticky-point-highlight-tag-error))))
+
 (defun sticky-point--save-position ()
 	"Stores the original position in a variable to be able to return later."
 	(with-current-buffer (window-buffer)
@@ -413,12 +428,15 @@ highlighting options:
 	(if sticky-point-mode
 		(progn
 			(setq sticky-point--cursor-type-original cursor-type)
+			(add-hook 'before-change-functions #'sticky-point--before-change nil t)
 			(add-hook 'post-command-hook #'sticky-point--save-position)
 			(add-hook 'pre-command-hook #'sticky-point--load-position))
 	(progn
+		(remove-hook 'before-change-functions #'sticky-point--before-change t)
+		(remove-overlays nil nil 'face 'hl-line)
 		(remove-overlays nil nil 'face 'sticky-point-highlight-symbol)
 		(remove-overlays nil nil 'face 'sticky-point-highlight-parens)
-		(remove-overlays nil nil 'face 'sticky-point-highlight-parens)
+		(remove-overlays nil nil 'face 'sticky-point-highlight-nested-parens)
 		(remove-overlays nil nil 'face 'sticky-point-highlight-paren-error)
 		(remove-overlays nil nil 'face 'sticky-point-nested-level)
 		(remove-overlays nil nil 'face 'sticky-point-highlight-tag)
