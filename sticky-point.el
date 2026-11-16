@@ -367,7 +367,6 @@ Prevents overlays from expanding to cover newly typed characters."
 	(when sticky-point-mode
 		(let ((clear-beg (max (point-min) (1- beg)))
 					(clear-end (min (point-max) (1+ end))))
-			(remove-overlays clear-beg clear-end 'face 'hl-line)
 			(remove-overlays clear-beg clear-end 'face 'sticky-point-highlight-symbol)
 			(remove-overlays clear-beg clear-end 'face 'sticky-point-highlight-parens)
 			(remove-overlays clear-beg clear-end 'face 'sticky-point-highlight-nested-parens)
@@ -433,7 +432,6 @@ highlighting options:
 			(add-hook 'pre-command-hook #'sticky-point--load-position))
 	(progn
 		(remove-hook 'before-change-functions #'sticky-point--before-change t)
-		(remove-overlays nil nil 'face 'hl-line)
 		(remove-overlays nil nil 'face 'sticky-point-highlight-symbol)
 		(remove-overlays nil nil 'face 'sticky-point-highlight-parens)
 		(remove-overlays nil nil 'face 'sticky-point-highlight-nested-parens)
