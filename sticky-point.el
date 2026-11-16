@@ -119,7 +119,7 @@ The highlighting is limited to the visible region of the window."
 	:group 'sticky-point)
 ;;;###autoload
 (defcustom sticky-point-scroll-commands
-	'(mwheel-scroll scroll-up scroll-down scroll-left scroll-right scroll-other-window scroll-other-window-down scroll-bar-scroll-up scroll-bar-scroll-down scroll-bar-drag scroll-bar-movement scroll-bar-toolkit-scroll scroll-bar-toolkit-horizontal-scroll ignore-preserving-kill-region treemacs-leftclick-action company-abort corfu-quit save-buffer pixel-scroll-precision handle-select-window handle-switch-frame lsp-ui-doc--handle-mouse-movement pixel-scroll-start-momentum pixel-scroll-interpolate-down pixel-scroll-interpolate-up scroll-up-line scroll-down-line pixel-scroll-precision-scroll-down pixel-scroll-precision-scroll-up-page)
+	'(mwheel-scroll scroll-up scroll-down scroll-left scroll-right scroll-other-window scroll-other-window-down scroll-bar-scroll-up scroll-bar-scroll-down scroll-bar-drag scroll-bar-movement scroll-bar-toolkit-scroll scroll-bar-toolkit-horizontal-scroll ignore-preserving-kill-region treemacs-leftclick-action company-abort corfu-quit save-buffer pixel-scroll-precision handle-select-window handle-switch-frame lsp-ui-doc--handle-mouse-movement pixel-scroll-start-momentum scroll-up-line scroll-down-line pixel-scroll-precision-scroll-down pixel-scroll-precision-scroll-up-page) ; scroll-up-command scroll-down-command pixel-scroll-interpolate-up pixel-scroll-interpolate-down
 	"Commands treated as scrolling operations.
 When `this-command' is in this list, the logical cursor is
 not updated and the saved position is preserved even if it
